@@ -16,7 +16,7 @@ namespace ProductivityTools.ImageGallery.Api.Controllers
     [ApiController]
     public class ImagesController : ControllerBase
     {
-        private string BasePath = @"d:\Photographs\Processed\zdjeciaDone\2009.12.30 Sylwester\";
+        private string BasePath = @"d:\.PawelPC\Photographs\Processed\zdjeciaDone\2009.12.30 Sylwester\";
         private string ApiAddress = @"https://localhost:5001/api/";
 
         //https://localhost:5001/api/Images/List
@@ -29,7 +29,7 @@ namespace ProductivityTools.ImageGallery.Api.Controllers
             foreach (string file in files)
             {
                 string imagePath = $"{ApiAddress}Images/Image3?name={Path.GetFileName(file)}&height={height}";
-                string imagePathThumbnail = $"{ApiAddress}Images/Image3?name={Path.GetFileName(file)}&height=20";
+                string imagePathThumbnail = $"{ApiAddress}Images/Image2?name={Path.GetFileName(file)}&height=100";
                 result.Add(new ImageItem { Original = imagePath, Thumbnail = imagePathThumbnail });
             }
             return result;
@@ -69,7 +69,7 @@ namespace ProductivityTools.ImageGallery.Api.Controllers
         public IActionResult Get2(string name, int height)
         {
             string path = Path.Join(BasePath, name);
-            FileStream file = new FileStream(path, FileMode.Open);
+            FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             Image newImage = GetReducedImage(height, file);
             MemoryStream s = new MemoryStream();
             newImage.Save(s, ImageFormat.Jpeg);
@@ -78,32 +78,58 @@ namespace ProductivityTools.ImageGallery.Api.Controllers
             return File(s.ToArray(), "image/jpg");
         }
 
+        private static object o = new object();
+
         public static Image ResizeImage(Image srcImage, int height)
         {
+            var start = DateTime.Now;
+
             var b = new Bitmap(srcImage.Width * height / srcImage.Height, height);
-            using (var g = Graphics.FromImage((Image)b))
+            lock (o)
             {
-                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                g.DrawImage(srcImage, 0, 0, b.Width, b.Height);
+                using (var g = Graphics.FromImage((Image)b))
+                {
+                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    g.DrawImage(srcImage, 0, 0, b.Width, b.Height);
+                }
             }
+            var x = DateTime.Now.Subtract(start);
+            Console.WriteLine($"{x}");
             return b;
+
         }
 
         //https://localhost:5001/api/Images/Image2?name=IMGP0001.JPG
         [HttpGet]
         [Route("Image3")]
-        public IActionResult Get3(string name, int height)
+        public async Task<IActionResult> Get3(string name, int height)
         {
+
             string path = Path.Join(BasePath, name);
-            var image = Image.FromFile(path);
-            var newImage = ResizeImage(image, height);
+            byte[] result;
 
-            // FileStream file = new FileStream(path, FileMode.Open);
-            // Image newImage = GetReducedImage(height, file);
+            using (FileStream SourceStream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))             {
+                result = new byte[SourceStream.Length];
+                await SourceStream.ReadAsync(result, 0, (int)SourceStream.Length);
+            }
+
             MemoryStream s = new MemoryStream();
-            newImage.Save(s, ImageFormat.Jpeg);
+            ///var image = await Image.FromStream(result);
+            lock (o)
+            {
+                MemoryStream ms = new MemoryStream(result, 0, result.Length);
+                ms.Position = 0; // this is important
+                var returnImage = Image.FromStream(ms, true);
+                var newImage = ResizeImage(returnImage, height-200);
 
+                // FileStream file = new FileStream(path, FileMode.Open);
+                // Image newImage = GetReducedImage(height, file);
+              
+                newImage.Save(s, ImageFormat.Jpeg);
+            }
             return File(s.ToArray(), "image/jpg");
         }
+
+
     }
 }
