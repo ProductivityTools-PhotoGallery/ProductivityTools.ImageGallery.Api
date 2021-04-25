@@ -66,11 +66,7 @@ namespace ProductivityTools.ImageGallery.Api.Controllers
         public IActionResult Get2(string name, int size)
         {
             string path = Path.Join(BasePath, name);
-            //PhysicalFileResult result = PhysicalFile(path, "image/jpg");
             FileStream file = new FileStream(path, FileMode.Open);
-            
-            //Stream stream = ProductImage.OpenReadStream();
-
             Image newImage = GetReducedImage(32, 32, file);
             MemoryStream s = new MemoryStream();
             newImage.Save(s, ImageFormat.Jpeg);
