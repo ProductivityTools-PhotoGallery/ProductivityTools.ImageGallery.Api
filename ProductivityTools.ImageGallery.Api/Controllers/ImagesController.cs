@@ -11,7 +11,7 @@ namespace ProductivityTools.ImageGallery.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ImageController : ControllerBase
+    public class ImagesController : ControllerBase
     {
         private string BasePath = @"d:\.PawelPC\Photographs\Processed\zdjeciaDone\2009.12.30 Sylwester\";
 
@@ -23,11 +23,12 @@ namespace ProductivityTools.ImageGallery.Api.Controllers
             string[] files = Directory.GetFiles(BasePath);
             foreach (string file in files)
             {
-                result.Add(new ImageItem { Original = file, Thumbnail = file });
+                result.Add(new ImageItem { Original = Path.GetFileName(file), Thumbnail = file });
             }
             return result;
         }
 
+        //https://localhost:5001/api/Images/Image?name=IMGP0001.JPG
         [HttpGet]
         [Route("Image")]
         public IActionResult Get(string name)
