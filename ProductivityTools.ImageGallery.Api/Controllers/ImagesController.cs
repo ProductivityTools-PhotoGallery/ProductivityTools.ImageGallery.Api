@@ -14,7 +14,9 @@ namespace ProductivityTools.ImageGallery.Api.Controllers
     public class ImagesController : ControllerBase
     {
         private string BasePath = @"d:\.PawelPC\Photographs\Processed\zdjeciaDone\2009.12.30 Sylwester\";
+        private string ApiAddress = @"https://localhost:5001/api/";
 
+        //https://localhost:5001/api/Images/List
         [HttpGet]
         [Route("List")]
         public List<ImageItem> List()
@@ -23,7 +25,8 @@ namespace ProductivityTools.ImageGallery.Api.Controllers
             string[] files = Directory.GetFiles(BasePath);
             foreach (string file in files)
             {
-                result.Add(new ImageItem { Original = Path.GetFileName(file), Thumbnail = file });
+                string imagePath = $"{ApiAddress}Images/Image?name={Path.GetFileName(file)}";
+                result.Add(new ImageItem { Original = imagePath, Thumbnail = imagePath });
             }
             return result;
         }
