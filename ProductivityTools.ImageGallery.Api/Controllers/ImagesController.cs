@@ -28,9 +28,9 @@ namespace ProductivityTools.ImageGallery.Api.Controllers
             string[] files = Directory.GetFiles(BasePath, "*jpg");
             foreach (string file in files)
             {
-                string imagePath = $"{ApiAddress}Images/Image3?name={Path.GetFileName(file)}&height={height}";
+                string imagePath = $"{ApiAddress}Images/id/{Path.GetFileNameWithoutExtension(file)}/{height}/900/";
                 string imagePathThumbnail = $"{ApiAddress}Images/Image2?name={Path.GetFileName(file)}&height=100";
-                result.Add(new ImageItem { Original = imagePath, Thumbnail = imagePathThumbnail });
+                result.Add(new ImageItem { Original = imagePath, Thumbnail = imagePath });
             }
             return result;
         }
@@ -65,10 +65,10 @@ namespace ProductivityTools.ImageGallery.Api.Controllers
 
         //https://localhost:5001/api/Images/Image2?name=IMGP0001.JPG
         [HttpGet]
-        [Route("Image2")]
-        public IActionResult Get2(string name, int height)
+        [Route("id/{name}/{height}/{f}")]
+        public IActionResult Get2(string name, int height, int f)
         {
-            string path = Path.Join(BasePath, name);
+            string path = Path.Join(BasePath, $"{name}.JPG");
             FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             Image newImage = GetReducedImage(height, file);
             MemoryStream s = new MemoryStream();
