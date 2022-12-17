@@ -16,7 +16,7 @@ namespace ProductivityTools.ImageGallery.Api.Controllers
     [ApiController]
     public class ImagesController : ControllerBase
     {
-        private string BasePath = @"d:\.PawelPC\Photographs\Processed\zdjeciaDone\2009.12.30 Sylwester\";
+        private string BasePath = @"d:\Trash\Images\";
         private string ApiAddress = @"https://localhost:5001/api/";
 
         //https://localhost:5001/api/Images/List
