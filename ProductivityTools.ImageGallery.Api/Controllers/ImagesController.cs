@@ -120,7 +120,7 @@ namespace ProductivityTools.ImageGallery.Api.Controllers
                 MemoryStream ms = new MemoryStream(result, 0, result.Length);
                 ms.Position = 0; // this is important
                 var returnImage = Image.FromStream(ms, true);
-                var newImage = ResizeImage(returnImage, height-200);
+                var newImage = ResizeImage(returnImage, height);
 
                 // FileStream file = new FileStream(path, FileMode.Open);
                 // Image newImage = GetReducedImage(height, file);

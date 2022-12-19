@@ -30,9 +30,9 @@ namespace ProductivityTools.ImageGallery.Api.Controllers
         }
         [HttpGet]
         [Route("Get")]
-        public List<ImageItem> Get([FromQuery(Name = "Name")] string name)
+        public List<ImageItem> Get([FromQuery(Name = "Name")] string name, 
+            [FromQuery(Name = "Height")] int height)
         {
-            int height = 100;
             var result = new List<ImageItem>();
             string[] files = Directory.GetFiles(Path.Join(BasePath, name), "*jpg");
             foreach (string file in files)
