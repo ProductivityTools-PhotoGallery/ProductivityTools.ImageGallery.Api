@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30002.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductivityTools.ImageGallery.Api", "ProductivityTools.ImageGallery.Api\ProductivityTools.ImageGallery.Api.csproj", "{71EFE095-DCFA-4C1A-8E2E-D8D28F7123F2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductivityTools.PhotoGallery.Api", "ProductivityTools.PhotoGallery.Api\ProductivityTools.PhotoGallery.Api.csproj", "{71EFE095-DCFA-4C1A-8E2E-D8D28F7123F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

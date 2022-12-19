@@ -9,5 +9,8 @@ namespace ProductivityTools.ImageGallery.Api.Model
     {
         public string Original { get; set; }
         public string Thumbnail { get; set; }
+
+        public int Width { get; set; }
+        public int Height { get; set; }
     }
 }
