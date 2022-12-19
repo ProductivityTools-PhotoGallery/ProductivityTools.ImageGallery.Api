@@ -102,10 +102,10 @@ namespace ProductivityTools.ImageGallery.Api.Controllers
         //https://localhost:5001/api/Images/Image2?name=IMGP0001.JPG
         [HttpGet]
         [Route("Image3")]
-        public async Task<IActionResult> Get3(string name, int height)
+        public async Task<IActionResult> Get3(string gallery, string name, int height)
         {
 
-            string path = Path.Join(BasePath, name);
+            string path = Path.Join(BasePath, gallery, name);
             byte[] result;
 
             using (FileStream SourceStream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))             {

@@ -37,8 +37,8 @@ namespace ProductivityTools.ImageGallery.Api.Controllers
             string[] files = Directory.GetFiles(Path.Join(BasePath, name), "*jpg");
             foreach (string file in files)
             {
-                string imagePath = $"{ApiAddress}Images/Image3?name={Path.GetFileName(file)}&height={height}";
-                string imagePathThumbnail = $"{ApiAddress}Images/Image2?name={Path.GetFileName(file)}&height=100";
+                string imagePath = $"{ApiAddress}Images/Image3?gallery={name}&name={Path.GetFileName(file)}&height={height}";
+                string imagePathThumbnail = $"{ApiAddress}Images/Image2?gallery={name}&name={Path.GetFileName(file)}&height=100";
                 result.Add(new ImageItem { Original = imagePath, Thumbnail = imagePathThumbnail });
             }
             return result;
