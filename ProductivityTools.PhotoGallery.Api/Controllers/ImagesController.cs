@@ -8,9 +8,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ProductivityTools.ImageGallery.Api.Model;
+using ProductivityTools.PhotoGallery.Api.Model;
 
-namespace ProductivityTools.ImageGallery.Api.Controllers
+namespace ProductivityTools.PhotoGallery.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

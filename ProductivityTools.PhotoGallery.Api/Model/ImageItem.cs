@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProductivityTools.ImageGallery.Api.Model
+namespace ProductivityTools.PhotoGallery.Api.Model
 {
     public class ImageItem
     {

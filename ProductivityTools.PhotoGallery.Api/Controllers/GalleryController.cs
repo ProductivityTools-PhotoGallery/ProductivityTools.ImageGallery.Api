@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ProductivityTools.ImageGallery.Api.Model;
+using ProductivityTools.PhotoGallery.Api.Model;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
-namespace ProductivityTools.ImageGallery.Api.Controllers
+namespace ProductivityTools.PhotoGallery.Api.Controllers
 {
 
 

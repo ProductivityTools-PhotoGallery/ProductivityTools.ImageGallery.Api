@@ -1,6 +1,6 @@
 using System;
 
-namespace ProductivityTools.ImageGallery.Api
+namespace ProductivityTools.PhotoGallery.Api
 {
     public class WeatherForecast
     {

@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace ProductivityTools.ImageGallery.Api
+namespace ProductivityTools.PhotoGallery.Api
 {
     public class Startup
     {

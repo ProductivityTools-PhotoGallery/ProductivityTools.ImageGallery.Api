@@ -1,4 +1,4 @@
-﻿namespace ProductivityTools.ImageGallery.Api.Model
+﻿namespace ProductivityTools.PhotoGallery.Api.Model
 {
     public class GalleryItem
     {
