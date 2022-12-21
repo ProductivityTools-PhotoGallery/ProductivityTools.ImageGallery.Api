@@ -25,7 +25,7 @@ pipeline {
             steps {
                 // Get some code from a GitHub repository
                 git branch: 'master',
-                url: 'git@github.com:ProductivityTools-PhotoGallery/ProductivityTools.PhotoGallery.Api.git'
+                url: 'https://github.com/ProductivityTools-PhotoGallery/ProductivityTools.PhotoGallery.Api.git'
             }
         }
         stage('build') {
