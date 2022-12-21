@@ -52,7 +52,7 @@ pipeline {
         }
         stage('copyIisFiles') {
             steps {
-                bat('xcopy "PhotoGallery.Api\\ProductivityTools.PhotoGallery.Api\\bin\\Release\\net6.0\\publish\\" "C:\\Bin\\PhotoGallery\\" /O /X /E /H /K')				              
+                bat('xcopy "ProductivityTools.PhotoGallery.Api\\bin\\Release\\net6.0\\publish\\" "C:\\Bin\\PhotoGallery\\" /O /X /E /H /K')				              
             }
         }
 
