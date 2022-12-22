@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using ProductivityTools.PhotoGallery.Api.Model;
 
 namespace ProductivityTools.PhotoGallery.Api.Controllers
@@ -16,8 +17,24 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
     [ApiController]
     public class ImagesController : ControllerBase
     {
-        private string BasePath = @"d:\Trash\Images\";
+        //private string BasePath = @"d:\Trash\Images\";
         private string ApiAddress = @"https://localhost:5001/api/";
+
+        private string BasePath
+        {
+            get
+            {
+                var r = this.Configuration["BasePath"];
+                return r;
+            }
+        }
+
+        private readonly IConfiguration Configuration;
+
+        public ImagesController(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
 
         //https://localhost:5001/api/Images/List
         [HttpGet]
