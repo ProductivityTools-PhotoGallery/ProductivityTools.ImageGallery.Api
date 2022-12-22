@@ -125,7 +125,8 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
             string path = Path.Join(BasePath, gallery, name);
             byte[] result;
 
-            using (FileStream SourceStream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))             {
+            using (FileStream SourceStream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
                 result = new byte[SourceStream.Length];
                 await SourceStream.ReadAsync(result, 0, (int)SourceStream.Length);
             }
@@ -141,12 +142,25 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
 
                 // FileStream file = new FileStream(path, FileMode.Open);
                 // Image newImage = GetReducedImage(height, file);
-              
+
                 newImage.Save(s, ImageFormat.Jpeg);
             }
             return File(s.ToArray(), "image/jpg");
         }
 
+        [Route("Image4")]
+        public IActionResult Image3(string gallery, string name, int height)
+        {
+            string filename = Path.Join(BasePath, gallery, name);
+
+            string ext = System.IO.Path.GetExtension(filename).ToLower();
+            Microsoft.Win32.RegistryKey regKey = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey(ext);
+            //get the mimetype of the file
+            string mimeType = regKey.GetValue("Content Type").ToString();
+
+            return PhysicalFile(filename, mimeType);
+
+        }
 
     }
 }
