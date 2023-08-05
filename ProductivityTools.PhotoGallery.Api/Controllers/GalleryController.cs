@@ -61,7 +61,7 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
                 var imageHeight = img.Height;
                 var imageWidth = img.Width;
 
-                string imagePath = $"{ApiAddress}Images/Image4?gallery={name}&name={Path.GetFileName(file)}&height={height}";
+                string imagePath = $"{ApiAddress}Images/Image3?gallery={name}&name={Path.GetFileName(file)}&height={height}";
                 string imagePathThumbnail = $"{ApiAddress}Images/Image2?gallery={name}&name={Path.GetFileName(file)}&height=100";
                 result.Add(new ImageItem { Original = imagePath, Width = imageWidth, Height = imageHeight, Thumbnail = imagePathThumbnail });
             }
