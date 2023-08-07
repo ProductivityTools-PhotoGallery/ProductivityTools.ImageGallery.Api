@@ -71,9 +71,9 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
         //https://localhost:5001/api/Images/Image?name=IMGP0001.JPG
         [HttpGet]
         [Route("Image")]
-        public IActionResult Get(string name)
+        public IActionResult Get(string gallery, string name, int height)
         {
-            string path = Path.Join(BasePath, name);
+            string path = Path.Join(BasePath, gallery, name);
             //PhysicalFileResult result = PhysicalFile(path, "image/jpg");
             FileStream file = new FileStream(path, FileMode.Open);
             PhysicalFileResult result = PhysicalFile(path, "image/jpg");
@@ -83,9 +83,9 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
         //https://localhost:5001/api/Images/Image2?name=IMGP0001.JPG
         [HttpGet]
         [Route("Image2")]
-        public IActionResult Get2(string name, int height)
+        public IActionResult Get2(string gallery, string name, int height)
         {
-            string path = Path.Join(BasePath, name);
+            string path = Path.Join(BasePath, gallery, name);
             FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             Image newImage = GetReducedImage(height, file);
             MemoryStream s = new MemoryStream();
@@ -130,6 +130,7 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
                 result = new byte[SourceStream.Length];
                 await SourceStream.ReadAsync(result, 0, (int)SourceStream.Length);
             }
+            return File(result.ToArray(), "image/jpg"); 
 
             MemoryStream s = new MemoryStream();
             ///var image = await Image.FromStream(result);
@@ -148,6 +149,7 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
             return File(s.ToArray(), "image/jpg");
         }
 
+        //very slow 3 minutes for two picture
         [Route("Image4")]
         public IActionResult Image3(string gallery, string name, int height)
         {
