@@ -45,33 +45,33 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
             string[] files = Directory.GetFiles(BasePath, "*jpg");
             foreach (string file in files)
             {
-                string imagePath = $"{ApiAddress}Images/Image3?name={Path.GetFileName(file)}&height={height}";
-                string imagePathThumbnail = $"{ApiAddress}Images/Image2?name={Path.GetFileName(file)}&height=100";
+                string imagePath = $"{ApiAddress}Images/Image4?name={Path.GetFileName(file)}";
+                string imagePathThumbnail = $"{ApiAddress}Images/Image4?name={Path.GetFileName(file)}";
                 result.Add(new ImageItem { Original = imagePath, Thumbnail = imagePathThumbnail });
             }
             return result;
         }
 
-        public Image GetReducedImage(int height, Stream resourceImage)
-        {
-            try
-            {
-                Image image = Image.FromStream(resourceImage);
-                var newWidth = image.Width * height / image.Height;
-                Image thumb = image.GetThumbnailImage(newWidth, height, () => false, IntPtr.Zero);
+        //public Image GetReducedImage(int height, Stream resourceImage)
+        //{
+        //    try
+        //    {
+        //        Image image = Image.FromStream(resourceImage);
+        //        var newWidth = image.Width * height / image.Height;
+        //        Image thumb = image.GetThumbnailImage(newWidth, height, () => false, IntPtr.Zero);
 
-                return thumb;
-            }
-            catch (Exception e)
-            {
-                return null;
-            }
-        }
-
+        //        return thumb;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return null;
+        //    }
+        //}
+        //jak rakieta
         //https://localhost:5001/api/Images/Image?name=IMGP0001.JPG
         [HttpGet]
-        [Route("Image")]
-        public IActionResult Get(string gallery, string name, int height)
+        [Route("Image1")]
+        public IActionResult Get(string gallery, string name)
         {
             string path = Path.Join(BasePath, gallery, name);
             //PhysicalFileResult result = PhysicalFile(path, "image/jpg");
@@ -80,14 +80,15 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
             return result;
         }
 
+        //jak rakieta
         //https://localhost:5001/api/Images/Image2?name=IMGP0001.JPG
         [HttpGet]
         [Route("Image2")]
-        public IActionResult Get2(string gallery, string name, int height)
+        public IActionResult Get2(string gallery, string name)
         {
             string path = Path.Join(BasePath, gallery, name);
             FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            Image newImage = GetReducedImage(height, file);
+            Image newImage = Image.FromStream(file);
             MemoryStream s = new MemoryStream();
             newImage.Save(s, ImageFormat.Jpeg);
             file.Close();
@@ -95,31 +96,32 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
             return File(s.ToArray(), "image/jpg");
         }
 
-        private static object o = new object();
+        //private static object o = new object();
 
-        public static Image ResizeImage(Image srcImage, int height)
-        {
-            var start = DateTime.Now;
+        //public static Image ResizeImage(Image srcImage, int height)
+        //{
+        //    var start = DateTime.Now;
 
-            var b = new Bitmap(srcImage.Width * height / srcImage.Height, height);
-            lock (o)
-            {
-                using (var g = Graphics.FromImage((Image)b))
-                {
-                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                    g.DrawImage(srcImage, 0, 0, b.Width, b.Height);
-                }
-            }
-            var x = DateTime.Now.Subtract(start);
-            Console.WriteLine($"{x}");
-            return b;
+        //    var b = new Bitmap(srcImage.Width * height / srcImage.Height, height);
+        //    lock (o)
+        //    {
+        //        using (var g = Graphics.FromImage((Image)b))
+        //        {
+        //            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+        //            g.DrawImage(srcImage, 0, 0, b.Width, b.Height);
+        //        }
+        //    }
+        //    var x = DateTime.Now.Subtract(start);
+        //    Console.WriteLine($"{x}");
+        //    return b;
 
-        }
+        //}
 
+        //jak rakieta
         //https://localhost:5001/api/Images/Image2?name=IMGP0001.JPG
         [HttpGet]
         [Route("Image3")]
-        public async Task<IActionResult> Get3(string gallery, string name, int height)
+        public async Task<IActionResult> Get3(string gallery, string name)
         {
 
             string path = Path.Join(BasePath, gallery, name);
@@ -132,26 +134,25 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
             }
             return File(result.ToArray(), "image/jpg"); 
 
-            MemoryStream s = new MemoryStream();
-            ///var image = await Image.FromStream(result);
-            lock (o)
-            {
-                MemoryStream ms = new MemoryStream(result, 0, result.Length);
-                ms.Position = 0; // this is important
-                var returnImage = Image.FromStream(ms, true);
-                var newImage = ResizeImage(returnImage, height);
+            //MemoryStream s = new MemoryStream();
+            /////var image = await Image.FromStream(result);
+            //lock (o)
+            //{
+            //    MemoryStream ms = new MemoryStream(result, 0, result.Length);
+            //    ms.Position = 0; // this is important
+            //    var returnImage = Image.FromStream(ms, true);
+            //    var newImage = ResizeImage(returnImage, height);
 
-                // FileStream file = new FileStream(path, FileMode.Open);
-                // Image newImage = GetReducedImage(height, file);
+            //    // FileStream file = new FileStream(path, FileMode.Open);
+            //    // Image newImage = GetReducedImage(height, file);
 
-                newImage.Save(s, ImageFormat.Jpeg);
-            }
-            return File(s.ToArray(), "image/jpg");
+            //    newImage.Save(s, ImageFormat.Jpeg);
+            //}
+            //return File(s.ToArray(), "image/jpg");
         }
 
-        //very slow 3 minutes for two picture
         [Route("Image4")]
-        public IActionResult Image3(string gallery, string name, int height)
+        public IActionResult Image3(string gallery, string name)
         {
             string filename = Path.Join(BasePath, gallery, name);
 
