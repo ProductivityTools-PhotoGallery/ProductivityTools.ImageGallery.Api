@@ -5,6 +5,7 @@ using ProductivityTools.PhotoGallery.Api.Model;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Xml.Linq;
 
 namespace ProductivityTools.PhotoGallery.Api.Controllers
 {
@@ -18,11 +19,20 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
 
         //private string BasePath = @"d:\PhotoGallery\";
 
-        private string BasePath
+        private string OriginalPhotoBasePath
         {
             get
             {
-                var r=this.Configuration["BasePath"];
+                var r = this.Configuration["OriginalPhotoBasePath"];
+                return r;
+            }
+        }
+
+        private string ThumbnailsPhotoBasePath
+        {
+            get
+            {
+                var r = this.Configuration["ThumbnailsPhotoBasePath"];
                 return r;
             }
         }
@@ -39,10 +49,10 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
         public List<GalleryItem> List(int height)
         {
             var result = new List<GalleryItem>();
-            string[] directories = Directory.GetDirectories(BasePath);
+            string[] directories = Directory.GetDirectories(OriginalPhotoBasePath);
             foreach (string file in directories)
             {
-                result.Add(new GalleryItem { Name = file.Replace(BasePath, "") });
+                result.Add(new GalleryItem { Name = file.Replace(OriginalPhotoBasePath, "") });
             }
             return result;
         }
@@ -52,7 +62,10 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
             [FromQuery(Name = "Height")] int height)
         {
             var result = new List<ImageItem>();
-            string[] files = Directory.GetFiles(Path.Join(BasePath, name), "*jpg");
+            var directory = Path.Join(OriginalPhotoBasePath, name);
+            ValidateThumbNails(directory);
+            string[] files = Directory.GetFiles(directory, "*jpg");
+
             foreach (string file in files)
             {
 
@@ -61,11 +74,26 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
                 var imageHeight = img.Height;
                 var imageWidth = img.Width;
 
-                string imagePath = $"{ApiAddress}Images/Image3?gallery={name}&name={Path.GetFileName(file)}&height={height}";
-                string imagePathThumbnail = $"{ApiAddress}Images/Image3?gallery={name}&name={Path.GetFileName(file)}&height=100";
+                string imagePath = $"{ApiAddress}Images/Image4?gallery={name}&name={Path.GetFileName(file)}&height={height}";
+                string imagePathThumbnail = $"{ApiAddress}Images/Image4?gallery={name}&name={Path.GetFileName(file)}&height=100";
                 result.Add(new ImageItem { Original = imagePath, Width = imageWidth, Height = imageHeight, Thumbnail = imagePathThumbnail });
             }
             return result;
+        }
+
+        private bool ValidateThumbNails(string path)
+        {
+            string[] files = Directory.GetFiles(path, "*jpg");
+            foreach (var file in files)
+            {
+                var pathFileName=Path.GetFileName(file);
+                var thumbNailFileName = pathFileName.Replace(OriginalPhotoBasePath, ThumbnailsPhotoBasePath);
+                if (System.IO.File.Exists(thumbNailFileName))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

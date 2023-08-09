@@ -20,14 +20,16 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
         //private string BasePath = @"d:\Trash\Images\";
         private string ApiAddress = @"https://localhost:5001/api/";
 
-        private string BasePath
+        private string OriginalPhotoBasePath
         {
             get
             {
-                var r = this.Configuration["BasePath"];
+                var r = this.Configuration["OriginalPhotoBasePath"];
                 return r;
             }
         }
+
+ 
 
         private readonly IConfiguration Configuration;
 
@@ -36,21 +38,22 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
             Configuration = configuration;
         }
 
-        //https://localhost:5001/api/Images/List
-        [HttpGet]
-        [Route("List")]
-        public List<ImageItem> List(int height)
-        {
-            var result = new List<ImageItem>();
-            string[] files = Directory.GetFiles(BasePath, "*jpg");
-            foreach (string file in files)
-            {
-                string imagePath = $"{ApiAddress}Images/Image4?name={Path.GetFileName(file)}";
-                string imagePathThumbnail = $"{ApiAddress}Images/Image4?name={Path.GetFileName(file)}";
-                result.Add(new ImageItem { Original = imagePath, Thumbnail = imagePathThumbnail });
-            }
-            return result;
-        }
+
+        ////https://localhost:5001/api/Images/List
+        //[HttpGet]
+        //[Route("List")]
+        //public List<ImageItem> List(int height)
+        //{
+        //    var result = new List<ImageItem>();
+        //    string[] files = Directory.GetFiles(OriginalPhotoBasePath, "*jpg");
+        //    foreach (string file in files)
+        //    {
+        //        string imagePath = $"{ApiAddress}Images/Image4?name={Path.GetFileName(file)}";
+        //        string imagePathThumbnail = $"{ApiAddress}Images/Image4?name={Path.GetFileName(file)}";
+        //        result.Add(new ImageItem { Original = imagePath, Thumbnail = imagePathThumbnail });
+        //    }
+        //    return result;
+        //}
 
         //public Image GetReducedImage(int height, Stream resourceImage)
         //{
@@ -67,13 +70,14 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
         //        return null;
         //    }
         //}
-        //jak rakieta
+        //: 'The process cannot access the file 'D:\PhotoGallery\2017.03.12 Zell am Ziller Narty - Copy\2017.03.12_09.28.56.jpg' because it is being used by another process.'
+
         //https://localhost:5001/api/Images/Image?name=IMGP0001.JPG
         [HttpGet]
         [Route("Image1")]
         public IActionResult Get(string gallery, string name)
         {
-            string path = Path.Join(BasePath, gallery, name);
+            string path = Path.Join(OriginalPhotoBasePath, gallery, name);
             //PhysicalFileResult result = PhysicalFile(path, "image/jpg");
             FileStream file = new FileStream(path, FileMode.Open);
             PhysicalFileResult result = PhysicalFile(path, "image/jpg");
@@ -86,7 +90,7 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
         [Route("Image2")]
         public IActionResult Get2(string gallery, string name)
         {
-            string path = Path.Join(BasePath, gallery, name);
+            string path = Path.Join(OriginalPhotoBasePath, gallery, name);
             FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             Image newImage = Image.FromStream(file);
             MemoryStream s = new MemoryStream();
@@ -124,7 +128,7 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
         public async Task<IActionResult> Get3(string gallery, string name)
         {
 
-            string path = Path.Join(BasePath, gallery, name);
+            string path = Path.Join(OriginalPhotoBasePath, gallery, name);
             byte[] result;
 
             using (FileStream SourceStream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
@@ -154,7 +158,7 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
         [Route("Image4")]
         public IActionResult Image3(string gallery, string name)
         {
-            string filename = Path.Join(BasePath, gallery, name);
+            string filename = Path.Join(OriginalPhotoBasePath, gallery, name);
 
             string ext = System.IO.Path.GetExtension(filename).ToLower();
             Microsoft.Win32.RegistryKey regKey = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey(ext);
