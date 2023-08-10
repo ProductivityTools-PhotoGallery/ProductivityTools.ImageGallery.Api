@@ -15,27 +15,14 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ImagesController : ControllerBase
+    public class ImagesController : BaseController
     {
         //private string BasePath = @"d:\Trash\Images\";
         private string ApiAddress = @"https://localhost:5001/api/";
 
-        private string OriginalPhotoBasePath
+
+        public ImagesController(IConfiguration configuration) : base(configuration)
         {
-            get
-            {
-                var r = this.Configuration["OriginalPhotoBasePath"];
-                return r;
-            }
-        }
-
- 
-
-        private readonly IConfiguration Configuration;
-
-        public ImagesController(IConfiguration configuration)
-        {
-            Configuration = configuration;
         }
 
 
@@ -75,13 +62,25 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
         //https://localhost:5001/api/Images/Image?name=IMGP0001.JPG
         [HttpGet]
         [Route("Image1")]
-        public IActionResult Get(string gallery, string name)
+        public IActionResult Get(string gallery, string name, int? height)
         {
-            string path = Path.Join(OriginalPhotoBasePath, gallery, name);
+
             //PhysicalFileResult result = PhysicalFile(path, "image/jpg");
-            FileStream file = new FileStream(path, FileMode.Open);
-            PhysicalFileResult result = PhysicalFile(path, "image/jpg");
-            return result;
+
+            if (height.HasValue)
+            {
+                string path = Path.Join(ThumbnailsPhotoBasePath, height.Value.ToString(), gallery, name);
+                FileStream file = new FileStream(path, FileMode.Open);
+                PhysicalFileResult result = PhysicalFile(path, "image/jpg");
+                return result;
+            }
+            else
+            {
+                string path = Path.Join(OriginalPhotoBasePath, gallery, name);
+                FileStream file = new FileStream(path, FileMode.Open);
+                PhysicalFileResult result = PhysicalFile(path, "image/jpg");
+                return result;
+            }
         }
 
         //jak rakieta
@@ -136,7 +135,7 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
                 result = new byte[SourceStream.Length];
                 await SourceStream.ReadAsync(result, 0, (int)SourceStream.Length);
             }
-            return File(result.ToArray(), "image/jpg"); 
+            return File(result.ToArray(), "image/jpg");
 
             //MemoryStream s = new MemoryStream();
             /////var image = await Image.FromStream(result);
