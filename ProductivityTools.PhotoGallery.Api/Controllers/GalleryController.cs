@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using ProductivityTools.PhotoGallery.Api.Model;
+using ProductivityTools.PhotoGallery.PhotoProcessing;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -81,16 +82,21 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
             return result;
         }
 
+        private void ResizePhotograph(string sourceFile, string destinationFile)
+        {
+            new PhotoProcessingService().ConvertImage(sourceFile,destinationFile);
+        }
+
         private bool ValidateThumbNails(string path)
         {
             string[] files = Directory.GetFiles(path, "*jpg");
             foreach (var file in files)
             {
-                var pathFileName=Path.GetFileName(file);
+                var pathFileName=Path.GetFullPath(file);
                 var thumbNailFileName = pathFileName.Replace(OriginalPhotoBasePath, ThumbnailsPhotoBasePath);
-                if (System.IO.File.Exists(thumbNailFileName))
+                if (System.IO.File.Exists(thumbNailFileName)==false)
                 {
-                    return true;
+                    ResizePhotograph(pathFileName,thumbNailFileName);
                 }
             }
             return false;

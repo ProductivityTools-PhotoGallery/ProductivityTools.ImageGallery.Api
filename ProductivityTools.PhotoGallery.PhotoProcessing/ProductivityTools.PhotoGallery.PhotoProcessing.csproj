@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NetVips" Version="2.3.1" />
+    <PackageReference Include="NetVips.Native.win-x64" Version="8.14.3" />
+  </ItemGroup>
+
+</Project>
