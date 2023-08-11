@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using ProductivityTools.PhotoGallery.Api.Model;
 using ProductivityTools.PhotoGallery.PhotoProcessing;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace ProductivityTools.PhotoGallery.Api.Controllers
@@ -43,11 +45,14 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
         public List<ImageItem> Get([FromQuery(Name = "Name")] string name,
             [FromQuery(Name = "Height")] int height)
         {
-            int thumbnailsize = 100;
+            List<int> thumbNailSizes = new List<int> { 500, 800, 1024, 1600 };
+           
             var result = new List<ImageItem>();
             var directory = Path.Join(OriginalPhotoBasePath, name);
-            ValidateThumbNails(directory, thumbnailsize);
+            thumbNailSizes.ForEach(x => ValidateThumbNails(directory, x));
             string[] files = Directory.GetFiles(directory, "*jpg");
+
+            Func<string, int, string> getPath = (file, size) => $"{ApiAddress}Images/Image1?gallery={name}&name={Path.GetFileName(file)}&height={size}";
 
             foreach (string file in files)
             {
@@ -58,8 +63,16 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
                 var imageWidth = img.Width;
 
                 string imagePath = $"{ApiAddress}Images/Image1?gallery={name}&name={Path.GetFileName(file)}";
-                string imagePathThumbnail = $"{ApiAddress}Images/Image1?gallery={name}&name={Path.GetFileName(file)}&height={thumbnailsize}";
-                result.Add(new ImageItem { src = imagePath, Width = imageWidth, Height = imageHeight, Thumbnail = imagePathThumbnail });
+                string imagePathThumbnail = getPath(name, thumbNailSizes[2]);
+                List<string> srcSet = thumbNailSizes.Select(x => string.Format($"{getPath(name, x)} {x}w")).ToList();
+                List<string> sizes = new List<string> { "(min-width: 480px) 50vw,(min-width: 1024px) 33.3vw,100vw" };
+                result.Add(new ImageItem {
+                    src = imagePath,
+                    Width = imageWidth,
+                    Height = imageHeight,
+                    srcSet = srcSet,
+                    sizes = sizes
+                }); ;
             }
             return result;
         }
@@ -83,10 +96,12 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
             {
                 var pathFileName = Path.GetFullPath(file);
                 var thumbNailFileName = pathFileName.Replace(OriginalPhotoBasePath, ThumbnailsPhotoBasePath);
-
+                var directory=Path.GetDirectoryName(thumbNailFileName);
+                var fileName=Path.GetFileName(thumbNailFileName);
+                var thumbNailFileNameWithSize = Path.Join(directory, size.ToString(), fileName);
                 if (System.IO.File.Exists(thumbNailFileName) == false)
                 {
-                    ResizePhotograph(pathFileName, thumbNailFileName, size);
+                    ResizePhotograph(pathFileName, thumbNailFileNameWithSize, size);
                 }
             }
             return false;
