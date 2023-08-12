@@ -69,7 +69,7 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
 
             if (height.HasValue)
             {
-                string path = Path.Join(ThumbnailsPhotoBasePath, height.Value.ToString(), gallery, name);
+                string path = Path.Join(ThumbnailsPhotoBasePath, gallery, height.Value.ToString(), name);
                 FileStream file = new FileStream(path, FileMode.Open);
                 PhysicalFileResult result = PhysicalFile(path, "image/jpg");
                 return result;

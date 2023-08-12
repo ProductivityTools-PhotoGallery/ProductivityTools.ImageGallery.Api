@@ -52,7 +52,7 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
             thumbNailSizes.ForEach(x => ValidateThumbNails(directory, x));
             string[] files = Directory.GetFiles(directory, "*jpg");
 
-            Func<string, int, string> getPath = (file, size) => $"{ApiAddress}Images/Image1?gallery={name}&name={Path.GetFileName(file)}&height={size}";
+            Func<string, int, string> getPath = (file, size) => $"{ApiAddress}Images/Image1?gallery={name}&height={size}&name={Path.GetFileName(file)}";
 
             foreach (string file in files)
             {
@@ -64,7 +64,7 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
 
                 string imagePath = $"{ApiAddress}Images/Image1?gallery={name}&name={Path.GetFileName(file)}";
                 string imagePathThumbnail = getPath(name, thumbNailSizes[2]);
-                List<string> srcSet = thumbNailSizes.Select(x => string.Format($"{getPath(name, x)} {x}w")).ToList();
+                List<string> srcSet = thumbNailSizes.Select(x => string.Format($"{getPath(file, x)} {x}w")).ToList();
                 List<string> sizes = new List<string> { "(min-width: 480px) 50vw,(min-width: 1024px) 33.3vw,100vw" };
                 result.Add(new ImageItem {
                     src = imagePath,
@@ -99,7 +99,7 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
                 var directory=Path.GetDirectoryName(thumbNailFileName);
                 var fileName=Path.GetFileName(thumbNailFileName);
                 var thumbNailFileNameWithSize = Path.Join(directory, size.ToString(), fileName);
-                if (System.IO.File.Exists(thumbNailFileName) == false)
+                if (System.IO.File.Exists(thumbNailFileNameWithSize) == false)
                 {
                     ResizePhotograph(pathFileName, thumbNailFileNameWithSize, size);
                 }
