@@ -45,6 +45,7 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
         public List<ImageItem> Get([FromQuery(Name = "Name")] string name,
             [FromQuery(Name = "Height")] int height)
         {
+            Console.WriteLine("XXXXXXXXXXXXX -Start-XXXXXXXXXXXXXX");
             List<int> thumbNailSizes = new List<int> { 500, 800, 1024, 1600 };
            
             var result = new List<ImageItem>();
@@ -62,8 +63,7 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
                 var imageHeight = img.Height;
                 var imageWidth = img.Width;
 
-                string imagePath = $"{ApiAddress}Images/Image1?gallery={name}&name={Path.GetFileName(file)}";
-                string imagePathThumbnail = getPath(name, thumbNailSizes[2]);
+                string imagePath = getPath(file, thumbNailSizes[0]);
                 List<string> srcSet = thumbNailSizes.Select(x => string.Format($"{getPath(file, x)} {x}w")).ToList();
                 List<string> sizes = new List<string> { "(min-width: 480px) 50vw,(min-width: 1024px) 33.3vw,100vw" };
                 result.Add(new ImageItem {
@@ -75,6 +75,7 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
                 }); ;
             }
             return result;
+            Console.WriteLine("XXXXXXXXXXXXX -End-XXXXXXXXXXXXXX");
         }
 
         private void ResizePhotograph(string sourceFile, string destinationFile, int targetSize)
