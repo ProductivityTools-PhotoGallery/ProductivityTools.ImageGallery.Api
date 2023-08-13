@@ -45,9 +45,10 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
         public List<ImageItem> Get([FromQuery(Name = "Name")] string name,
             [FromQuery(Name = "Height")] int height)
         {
+            DateTime now = DateTime.Now;
             Console.WriteLine("XXXXXXXXXXXXX -Start-XXXXXXXXXXXXXX");
             List<int> thumbNailSizes = new List<int> { 500, 800, 1024, 1600 };
-           
+
             var result = new List<ImageItem>();
             var directory = Path.Join(OriginalPhotoBasePath, name);
             thumbNailSizes.ForEach(x => ValidateThumbNails(directory, x));
@@ -58,24 +59,27 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
             foreach (string file in files)
             {
 
-                Bitmap img = new Bitmap(file);
+                //Bitmap img = new Bitmap(file);
 
-                var imageHeight = img.Height;
-                var imageWidth = img.Width;
+                //var imageHeight = img.Height;
+                //var imageWidth = img.Width;
 
                 string imagePath = getPath(file, thumbNailSizes[0]);
                 List<string> srcSet = thumbNailSizes.Select(x => string.Format($"{getPath(file, x)} {x}w")).ToList();
                 List<string> sizes = new List<string> { "(min-width: 480px) 50vw,(min-width: 1024px) 33.3vw,100vw" };
-                result.Add(new ImageItem {
+                result.Add(new ImageItem
+                {
                     src = imagePath,
-                    Width = imageWidth,
-                    Height = imageHeight,
+                    //Width = imageWidth,
+                    //Height = imageHeight,
                     srcSet = srcSet,
                     sizes = sizes
                 }); ;
             }
-            return result;
+            Console.WriteLine(DateTime.Now - now);
+
             Console.WriteLine("XXXXXXXXXXXXX -End-XXXXXXXXXXXXXX");
+            return result;
         }
 
         private void ResizePhotograph(string sourceFile, string destinationFile, int targetSize)
@@ -97,8 +101,8 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
             {
                 var pathFileName = Path.GetFullPath(file);
                 var thumbNailFileName = pathFileName.Replace(OriginalPhotoBasePath, ThumbnailsPhotoBasePath);
-                var directory=Path.GetDirectoryName(thumbNailFileName);
-                var fileName=Path.GetFileName(thumbNailFileName);
+                var directory = Path.GetDirectoryName(thumbNailFileName);
+                var fileName = Path.GetFileName(thumbNailFileName);
                 var thumbNailFileNameWithSize = Path.Join(directory, size.ToString(), fileName);
                 if (System.IO.File.Exists(thumbNailFileNameWithSize) == false)
                 {
