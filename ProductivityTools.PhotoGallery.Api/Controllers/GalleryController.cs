@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using ProductivityTools.PhotoGallery.Api.Model;
-using ProductivityTools.PhotoGallery.PhotoProcessing;
+using ProductivityTools.PhotoGallery.CoreObjects;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Xml.Linq;
 
 namespace ProductivityTools.PhotoGallery.Api.Controllers
@@ -40,76 +41,88 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
             }
             return result;
         }
+
+        //replace from core objects
+        private const string MetadataName = ".photo.json";
+        private string GetPhotoMetadataPath(string directory)
+        {
+            var photoMetadataPath = Path.Join(directory, MetadataName);
+            return photoMetadataPath;
+        }
+
         [HttpGet]
         [Route("Get")]
-        public List<ImageItem> Get([FromQuery(Name = "Name")] string name,
-            [FromQuery(Name = "Height")] int height)
+        public List<ImageItem> Get([FromQuery(Name = "Name")] string name)
         {
+
+            Func<string, int, string> getPath = (file, size) => $"{ApiAddress}Images/Image1?gallery={name.Replace(" ","%20")}&height={size}&name={Path.GetFileName(file)}";
+
             DateTime now = DateTime.Now;
             Console.WriteLine("XXXXXXXXXXXXX -Start-XXXXXXXXXXXXXX");
-            List<int> thumbNailSizes = new List<int> { 500, 800, 1024, 1600 };
 
+            var galleryDirectory = Path.Join(OriginalPhotoBasePath, name);
+            var photoMetadataPath = GetPhotoMetadataPath(galleryDirectory);
             var result = new List<ImageItem>();
-            var directory = Path.Join(OriginalPhotoBasePath, name);
-            thumbNailSizes.ForEach(x => ValidateThumbNails(directory, x));
-            string[] files = Directory.GetFiles(directory, "*jpg");
 
-            Func<string, int, string> getPath = (file, size) => $"{ApiAddress}Images/Image1?gallery={name}&height={size}&name={Path.GetFileName(file)}";
-
-            foreach (string file in files)
+            if (System.IO.File.Exists(photoMetadataPath))
             {
+                var joson = System.IO.File.ReadAllText(photoMetadataPath);
+                var gallery = JsonSerializer.Deserialize<Gallery>(joson);
 
-                //Bitmap img = new Bitmap(file);
-
-                //var imageHeight = img.Height;
-                //var imageWidth = img.Width;
-
-                string imagePath = getPath(file, thumbNailSizes[0]);
-                List<string> srcSet = thumbNailSizes.Select(x => string.Format($"{getPath(file, x)} {x}w")).ToList();
-                List<string> sizes = new List<string> { "(min-width: 480px) 50vw,(min-width: 1024px) 33.3vw,100vw" };
-                result.Add(new ImageItem
+                foreach (var photo in gallery.ImageList)
                 {
-                    src = imagePath,
-                    //Width = imageWidth,
-                    //Height = imageHeight,
-                    srcSet = srcSet,
-                    sizes = sizes
-                }); ;
+                    string imagePath = getPath(photo.Name, gallery.ImageSizes[0]);
+                    List<string> srcSet = gallery.ImageSizes.Select(x => string.Format($"{getPath(photo.Name, x)} {x}w")).ToList();
+                    List<string> sizes = new List<string> { "10vw" };
+                    result.Add(new ImageItem
+                    {
+                        src = imagePath,
+                        Width = photo.Width,
+                        Height = photo.Height,
+                        srcSet = srcSet,
+                        sizes = sizes
+                    }); ;
+                }
+
+
             }
+            else
+            {
+                throw new Exception("not processed");
+            }
+
+
+            //List<int> thumbNailSizes = new List<int> { 500, 800, 1024, 1600 };
+
+            //var directory = Path.Join(OriginalPhotoBasePath, name);
+            //string[] files = Directory.GetFiles(directory, "*jpg");
+
+       
+
+            //foreach (string file in files)
+            //{
+
+            //    //Bitmap img = new Bitmap(file);
+
+            //    //var imageHeight = img.Height;
+            //    //var imageWidth = img.Width;
+
+            //    string imagePath = getPath(file, thumbNailSizes[0]);
+            //    List<string> srcSet = thumbNailSizes.Select(x => string.Format($"{getPath(file, x)} {x}w")).ToList();
+            //    List<string> sizes = new List<string> { "(min-width: 480px) 50vw,(min-width: 1024px) 33.3vw,100vw" };
+            //    result.Add(new ImageItem
+            //    {
+            //        src = imagePath,
+            //        //Width = imageWidth,
+            //        //Height = imageHeight,
+            //        srcSet = srcSet,
+            //        sizes = sizes
+            //    }); ;
+            //}
             Console.WriteLine(DateTime.Now - now);
 
             Console.WriteLine("XXXXXXXXXXXXX -End-XXXXXXXXXXXXXX");
             return result;
-        }
-
-        private void ResizePhotograph(string sourceFile, string destinationFile, int targetSize)
-        {
-            new PhotoProcessingService().ConvertImage(sourceFile, destinationFile, targetSize);
-        }
-
-        private bool ValidateThumbNails(string path, int size)
-        {
-            var thumbNailDirectory = path.Replace(OriginalPhotoBasePath, ThumbnailsPhotoBasePath);
-            thumbNailDirectory = Path.Join(thumbNailDirectory, size.ToString());
-            bool exists = Directory.Exists(thumbNailDirectory);
-            if (!exists)
-            {
-                Directory.CreateDirectory(thumbNailDirectory);
-            }
-            string[] files = Directory.GetFiles(path, "*jpg");
-            foreach (var file in files)
-            {
-                var pathFileName = Path.GetFullPath(file);
-                var thumbNailFileName = pathFileName.Replace(OriginalPhotoBasePath, ThumbnailsPhotoBasePath);
-                var directory = Path.GetDirectoryName(thumbNailFileName);
-                var fileName = Path.GetFileName(thumbNailFileName);
-                var thumbNailFileNameWithSize = Path.Join(directory, size.ToString(), fileName);
-                if (System.IO.File.Exists(thumbNailFileNameWithSize) == false)
-                {
-                    ResizePhotograph(pathFileName, thumbNailFileNameWithSize, size);
-                }
-            }
-            return false;
-        }
+        }       
     }
 }
