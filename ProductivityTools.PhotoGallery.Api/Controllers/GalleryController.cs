@@ -55,7 +55,7 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
         public List<ImageItem> Get([FromQuery(Name = "Name")] string name)
         {
 
-            Func<string, int, string> getPath = (file, size) => $"{ApiAddress}Images/Image1?gallery={name.Replace(" ","%20")}&height={size}&name={Path.GetFileName(file)}";
+            Func<string, int, string> getPath = (file, size) => $"{ApiAddress}Images/Image1?gallery={name.Replace(" ", "%20")}&height={size}&name={Path.GetFileName(file)}";
 
             DateTime now = DateTime.Now;
             Console.WriteLine("XXXXXXXXXXXXX -Start-XXXXXXXXXXXXXX");
@@ -71,8 +71,8 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
 
                 foreach (var photo in gallery.ImageList)
                 {
-                    string imagePath = getPath(photo.Name, gallery.ImageSizes[0]);
-                    List<string> srcSet = gallery.ImageSizes.Select(x => string.Format($"{getPath(photo.Name, x)} {x}w")).ToList();
+                    string imagePath = getPath(photo.Name, gallery.ImageSizes[1]);
+                    List<ImageItem> srcSet = gallery.ImageSizes.Select(x => new ImageItem() { Height = x, Width = x, src = string.Format($"{getPath(photo.Name, x)}") }).ToList();
                     List<string> sizes = new List<string> { "10vw" };
                     result.Add(new ImageItem
                     {
@@ -80,7 +80,7 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
                         Width = photo.Width,
                         Height = photo.Height,
                         srcSet = srcSet,
-                        sizes = sizes
+                        //  sizes = sizes
                     }); ;
                 }
 
@@ -97,7 +97,7 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
             //var directory = Path.Join(OriginalPhotoBasePath, name);
             //string[] files = Directory.GetFiles(directory, "*jpg");
 
-       
+
 
             //foreach (string file in files)
             //{
@@ -123,6 +123,6 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
 
             Console.WriteLine("XXXXXXXXXXXXX -End-XXXXXXXXXXXXXX");
             return result;
-        }       
+        }
     }
 }
