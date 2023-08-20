@@ -71,8 +71,14 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
 
                 foreach (var photo in gallery.ImageList)
                 {
-                    string imagePath = getPath(photo.Name, gallery.ImageSizes[1]);
-                    List<ImageItem> srcSet = gallery.ImageSizes.Select(x => new ImageItem() { Height = x, Width = x, src = string.Format($"{getPath(photo.Name, x)}") }).ToList();
+                    string imagePath = getPath(photo.Name, gallery.ImageSizes[3]);
+                    List<ImageItem> srcSet = gallery.ImageSizes.Select(x =>
+                    {
+                        var ratio = photo.Width / x;
+                        var result = new ImageItem() { Height = photo.Height /ratio, Width = photo.Width / ratio, src = string.Format($"{getPath(photo.Name, x)}") };
+                        return result;
+                    }
+                    ).ToList();
                     List<string> sizes = new List<string> { "10vw" };
                     result.Add(new ImageItem
                     {
