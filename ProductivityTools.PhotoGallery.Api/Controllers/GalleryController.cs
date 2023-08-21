@@ -75,7 +75,7 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
                     List<ImageItem> srcSet = gallery.ImageSizes.Select(x =>
                     {
                         var ratio = photo.Width / x;
-                        var result = new ImageItem() { Height = photo.Height /ratio, Width = photo.Width / ratio, src = string.Format($"{getPath(photo.Name, x)}") };
+                        var result = new ImageItem() { Height = photo.Height / ratio, Width = x, src = string.Format($"{getPath(photo.Name, x)}") };
                         return result;
                     }
                     ).ToList();
