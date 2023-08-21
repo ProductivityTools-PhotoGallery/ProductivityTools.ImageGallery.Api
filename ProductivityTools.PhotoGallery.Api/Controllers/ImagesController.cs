@@ -62,14 +62,14 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
         //https://localhost:5001/api/Images/Image?name=IMGP0001.JPG
         [HttpGet]
         [Route("Image1")]
-        public IActionResult Get(string gallery, string name, int? height)
+        public IActionResult Get(string gallery, string name, int? width)
         {
 
             //PhysicalFileResult result = PhysicalFile(path, "image/jpg");
 
-            if (height.HasValue)
+            if (width.HasValue)
             {
-                string path = Path.Join(ThumbnailsPhotoBasePath, gallery, height.Value.ToString(), name);
+                string path = Path.Join(ThumbnailsPhotoBasePath, gallery, width.Value.ToString(), name);
                 FileStream file = new FileStream(path, FileMode.Open);
                 PhysicalFileResult result = PhysicalFile(path, "image/jpg");
                 return result;

@@ -55,7 +55,7 @@ namespace ProductivityTools.PhotoGallery.Api.Controllers
         public List<ImageItem> Get([FromQuery(Name = "Name")] string name)
         {
 
-            Func<string, int, string> getPath = (file, size) => $"{ApiAddress}Images/Image1?gallery={name.Replace(" ", "%20")}&height={size}&name={Path.GetFileName(file)}";
+            Func<string, int, string> getPath = (file, size) => $"{ApiAddress}Images/Image1?gallery={name.Replace(" ", "%20")}&width={size}&name={Path.GetFileName(file)}";
 
             DateTime now = DateTime.Now;
             Console.WriteLine("XXXXXXXXXXXXX -Start-XXXXXXXXXXXXXX");
